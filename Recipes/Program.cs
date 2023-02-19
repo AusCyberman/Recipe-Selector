@@ -1,40 +1,43 @@
-﻿namespace Recipes;
+﻿using System.Drawing;
+using System.Runtime.InteropServices;
+
+namespace Recipes;
 
 internal class Program
 {
     // List of all Recipes
-    internal static Recipe[] Recipes =
+    private static Recipe[] Recipes =
     {
-        new Recipe("Donna Hay’s Fluffy Pancakes",
+        new("Donna Hay’s Fluffy Pancakes",
             "https://www.donnahay.com.au/recipes/breakfast/fluffy-pancakes",
             ConsoleColor.Yellow,
             """
-                    ██▓▓████████████                              
-              ██████▒▒▒▒░░▒▒▒▒░░░░▒▒██████                        
-          ████▒▒░░▒▒░░░░░░░░░░░░░░░░▒▒▒▒▒▒████                    
-        ██▒▒░░░░░░░░░░░░░░▒▒▒▒░░░░░░░░░░▒▒▒▒▒▒██                  
-      ██▒▒░░░░░░░░░░░░░░▒▒▒▒▒▒▒▒░░░░░░░░░░▒▒▒▒▒▒██                
-      ██▒▒░░░░░░░░      ▒▒▒▒▒▒▒▒  ░░░░░░░░░░░░░░▓▓                
-    ██▒▒░░░░░░        ▒▒▒▒▒▒▒▒▒▒▓▓    ░░░░░░░░░░▒▒██              
-    ██▒▒░░░░░░        ▒▒▒▒▒▒▒▒▒▒▒▒▒▒  ░░░░░░▒▒▒▒▒▒██              
-    ██▒▒░░░░░░          ▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░░░░░▒▒▒▒▒▒██              
-    ██▒▒░░░░░░░░░░        ▒▒▒▒▒▒▒▒▒▒▒▒░░░░▒▒▒▒▒▒▒▒██              
-    ██▒▒▒▒░░░░░░░░░░░░░░░░░░░░▒▒▒▒▒▒░░░░▒▒▒▒▒▒░░▓▓██              
-    ██  ▒▒▒▒▒▒░░░░░░░░░░░░░░░░░░░░░░▒▒▒▒░░▒▒▒▒▓▓░░██            
-    ██    ▒▒▒▒▒▒▒▒▒▒░░░░░░░░░░░░░░░░▒▒▒▒▒▒▓▓▓▓░░░░██     
-    ██▒▒      ▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░░░▒▒▒▒▓▓▓▓▓▓░░░░░░▓▓██     
-    ██░░▒▒          ▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░▓▓▒▒██     
-    ██  ░░▓▓▓▓          ░░░░░░░░░░░░░░░░░░▓▓▓▓▒▒░░██     
-    ██    ░░░░▒▒▒▒▒▒    ░░░░░░░░░░░░▓▓▓▓▓▓▒▒▒▒░░░░██     
-    ██▓▓      ░░░░░░▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▒▒▒░░░░░░▓▓██     
-    ██░░▒▒          ░░░░▒▒▒▒▒▒▒▒▒▒▒▒░░░░░░░░░░▓▓▒▒██    
-    ██  ░░▒▒▒▒          ░░░░░░░░░░░░░░░░░░▓▓▓▓▒▒░░██      
-      ██  ░░░░▒▒▒▒▒▒    ░░░░░░░░░░░░▓▓▓▓▓▓▒▒▒▒░░▓▓██     
-      ██      ░░░░░░▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▒▒▒░░░░░░████    
-        ██          ░░░░▒▒▒▒▒▒▒▒▒▒▒▒░░░░░░░░░░▒▒       
-          ████          ░░░░░░░░░░░░░░░░░░▓▓▓▓       
-              ██████    ░░░░░░░░░░░░▓▓▓▓▓▓         
-                    ▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓               
+                ██▓▓████████████
+          ██████▒▒▒▒░░▒▒▒▒░░░░▒▒██████
+      ████▒▒░░▒▒░░░░░░░░░░░░░░░░▒▒▒▒▒▒████
+    ██▒▒░░░░░░░░░░░░░░▒▒▒▒░░░░░░░░░░▒▒▒▒▒▒██
+  ██▒▒░░░░░░░░░░░░░░▒▒▒▒▒▒▒▒░░░░░░░░░░▒▒▒▒▒▒██
+  ██▒▒░░░░░░░░      ▒▒▒▒▒▒▒▒  ░░░░░░░░░░░░░░▓▓
+██▒▒░░░░░░        ▒▒▒▒▒▒▒▒▒▒▓▓    ░░░░░░░░░░▒▒██
+██▒▒░░░░░░        ▒▒▒▒▒▒▒▒▒▒▒▒▒▒  ░░░░░░▒▒▒▒▒▒██
+██▒▒░░░░░░          ▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░░░░░▒▒▒▒▒▒██
+██▒▒░░░░░░░░░░        ▒▒▒▒▒▒▒▒▒▒▒▒░░░░▒▒▒▒▒▒▒▒██
+██▒▒▒▒░░░░░░░░░░░░░░░░░░░░▒▒▒▒▒▒░░░░▒▒▒▒▒▒░░▓▓██
+██  ▒▒▒▒▒▒░░░░░░░░░░░░░░░░░░░░░░▒▒▒▒░░▒▒▒▒▓▓░░██
+██    ▒▒▒▒▒▒▒▒▒▒░░░░░░░░░░░░░░░░▒▒▒▒▒▒▓▓▓▓░░░░██
+██▒▒      ▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░░░▒▒▒▒▓▓▓▓▓▓░░░░░░▓▓██
+██░░▒▒          ▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓░░░░░░░░░░▓▓▒▒██
+██  ░░▓▓▓▓          ░░░░░░░░░░░░░░░░░░▓▓▓▓▒▒░░██
+██    ░░░░▒▒▒▒▒▒    ░░░░░░░░░░░░▓▓▓▓▓▓▒▒▒▒░░░░██
+██▓▓      ░░░░░░▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▒▒▒░░░░░░▓▓██
+██░░▒▒          ░░░░▒▒▒▒▒▒▒▒▒▒▒▒░░░░░░░░░░▓▓▒▒██
+██  ░░▒▒▒▒          ░░░░░░░░░░░░░░░░░░▓▓▓▓▒▒░░██
+  ██  ░░░░▒▒▒▒▒▒    ░░░░░░░░░░░░▓▓▓▓▓▓▒▒▒▒░░▓▓██
+  ██      ░░░░░░▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▒▒▒░░░░░░████
+    ██          ░░░░▒▒▒▒▒▒▒▒▒▒▒▒░░░░░░░░░░▒▒
+      ████          ░░░░░░░░░░░░░░░░░░▓▓▓▓
+          ██████    ░░░░░░░░░░░░▓▓▓▓▓▓
+                ▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓
 """,
             new[]
             {
@@ -53,32 +56,32 @@ internal class Program
                 "Heat a large, lightly greased non-stick frying pan over medium heat. Using a ladle or a cup, add about ¼ cup (60ml) of the batter to the pan for each pancake (you can cook 2–3 at a time, just leave yourself enough space for flipping). Cook pancakes for 1–2 minutes each side or until they’re golden, using a turner to flip them.",
                 "Stack and serve the pancakes warm from the pan with some natural yoghurt, maple syrup and berries (or your own favourite toppings)."
             }),
-        new Recipe("Apple Crumble",
+        new("Apple Crumble",
             "https://www.taste.com.au/recipes/quick-easy-apple-crumble/4f2e1fb8-2060-4e27-9833-a5ab7ab69717",
             ConsoleColor.DarkGreen,
             """""""""""
-                                 ___
-                              _/`.-'`.
-                    _      _/` .  _.'
-           ..:::::.(_)   /` _.'_./
-         .oooooooooo\ \o/.-'__.'o.
-        .ooooooooo`._\_|_.'`oooooob.
-      .ooooooooooooooooooooo&&oooooob.
-     .oooooooooooooooooooo&@@@@@@oooob.
-    .ooooooooooooooooooooooo&&@@@@@ooob.
-    doooooooooooooooooooooooooo&@@@@ooob
-    doooooooooooooooooooooooooo&@@@oooob
-    dooooooooooooooooooooooooo&@@@ooooob
-    dooooooooooooooooooooooooo&@@oooooob
-    `dooooooooooooooooooooooooo&@ooooob'
-     `doooooooooooooooooooooooooooooob'
-      `doooooooooooooooooooooooooooob'
-       `doooooooooooooooooooooooooob'
-        `doooooooooooooooooooooooob'
-         `doooooooooooooooooooooob'
-          `dooooooooobodoooooooob'
-           `doooooooob dooooooob'
-             `"""""""' `""""""'
+                             ___
+                          _/`.-'`.
+                _      _/` .  _.'
+       ..:::::.(_)   /` _.'_./
+     .oooooooooo\ \o/.-'__.'o.
+    .ooooooooo`._\_|_.'`oooooob.
+  .ooooooooooooooooooooo&&oooooob.
+ .oooooooooooooooooooo&@@@@@@oooob.
+.ooooooooooooooooooooooo&&@@@@@ooob.
+doooooooooooooooooooooooooo&@@@@ooob
+doooooooooooooooooooooooooo&@@@oooob
+dooooooooooooooooooooooooo&@@@ooooob
+dooooooooooooooooooooooooo&@@oooooob
+`dooooooooooooooooooooooooo&@ooooob'
+ `doooooooooooooooooooooooooooooob'
+  `doooooooooooooooooooooooooooob'
+   `doooooooooooooooooooooooooob'
+    `doooooooooooooooooooooooob'
+     `doooooooooooooooooooooob'
+      `dooooooooobodoooooooob'
+       `doooooooob dooooooob'
+         `"""""""' `""""""'
 """"""""""",
             new[]
             {
@@ -98,15 +101,15 @@ internal class Program
                 "To make the crumble, combine the flour, sugar, oats and butter in a bowl. Use your fingertips to rub the butter into the flour mixture until the mixture resembles breadcrumbs.",
                 "Transfer apples into a 3 cup-capacity ovenproof dish, draining off most of the liquid. Sprinkle crumble mixture over the apples. Bake in oven for 20-25 minutes or until golden. Serve warm with ice-cream or whipped cream."
             }),
-        new Recipe("Sushi",
+        new("Sushi",
             "https://www.taste.com.au/recipes/sushi-2/0d57247f-03a6-434d-b26b-071b91614d41",
             ConsoleColor.White,
             """"
-       ,;'O@';,    ,;'O@';,    ,;'O@';,
-      |',_@H_,'|  |',_@H_,'|  |',_@H_,'|     
-      |        |  |        |  |        |
-       '.____.'    '.____.'    '.____.'
-  """",
+ ,;'O@';,    ,;'O@';,    ,;'O@';,
+|',_@H_,'|  |',_@H_,'|  |',_@H_,'|
+|        |  |        |  |        |
+ '.____.'    '.____.'    '.____.'
+"""",
             new[]
             {
                 "2 1/2 cups (540g) koshihikari rice", "3 3/4 cups (935ml) cold water ",
@@ -123,25 +126,12 @@ internal class Program
                 "Place salmon and avocado along the centre of the rice. Hold filling in place while rolling the mat over to enclose rice and filling. Repeat with remaining nori, rice, salmon and avocado.",
                 "Use a sharp knife to slice sushi widthways into 1.5cm-thick slices. Place on serving dishes with soy sauce, wasabi and pickled ginger, if desired."
             }),
-        new Recipe("Chilli Prawn Spaghetti",
+        new("Chilli Prawn Spaghetti",
             "https://www.taste.com.au/recipes/chilli-prawn-tomato-spaghetti/c6ab8078-1b4b-408a-9249-89ea428a2790",
             ConsoleColor.Yellow,
             """"
-            __.--,
-       ,--'~-.,;=/
-      {  /,”” ‘ |
-       `|\_ (@\(@\_
-        \(  _____(./
-        | `-~--~-‘\
-        | /   /  , \
-        | |   (\  \  \
-       _\_|.-‘` `’| ,-= )
-      (_  ,\ ____  \  ,/
-        \  |--===--(,,/
-         ```========-/
-           \_______ /
-    SOMEBODY TOUCHA MY SPAGHET!"
-  """",
+SOMEBODY TOUCHA MY SPAGHET, WHERE'D IT GO!
+"""",
             new[]
             {
                 "200g dried spaghetti pasta", "2 tsp extra virgin olive oil", "2 garlic cloves, thinly sliced",
@@ -154,19 +144,19 @@ internal class Program
                 "Meanwhile, heat oil in a large frying pan over medium-high heat. Add garlic and chilli. Cook for 1 minute or until fragrant. Add prawns. Cook, stirring, for 2 to 3 minutes or until pink and cooked through. Add pasta, tomato and cooking liquid. Cook for 2 minutes or until heated through. Season with salt and pepper. Stir through parsley. Serve.`"
             }
         ),
-        new Recipe("Healthy fried rice with egg",
+        new("Healthy fried rice with egg",
             "https://www.taste.com.au/recipes/healthy-fried-rice-egg-recipe/937v81xz",
             ConsoleColor.DarkYellow,
             """
-          ████                              
-        ██░░░░██                            
-      ██░░░░░░░░██                          
-      ██░░░░░░░░██                          
-    ██░░░░░░░░░░░░██                        
-    ██░░░░░░░░░░░░██                        
-    ██░░░░░░░░░░░░██                        
-      ██░░░░░░░░██                          
-        ████████                            
+      ████
+    ██░░░░██
+  ██░░░░░░░░██
+  ██░░░░░░░░██
+██░░░░░░░░░░░░██
+██░░░░░░░░░░░░██
+██░░░░░░░░░░░░██
+  ██░░░░░░░░██
+    ████████
 """,
             new[]
             {
@@ -183,21 +173,21 @@ internal class Program
                 "Increase heat to high. Add the sesame oil, carrot and shallot to the wok. Stir-fry for 1 minute. Add the broccoli, snow peas, gai lan and capsicum. Stir-fry for 2 minutes or until tender crisp. Add the rice, soy sauce and mirin. Stir-fry until well combined and heated through. Add half the omelette and stir until combined.",
                 "Divide the fried rice among serving bowls. Top with the remaining omelette and extra shallot to serve."
             }),
-        new Recipe(
+        new(
             "Lamb Tikka Curry",
             "https://www.taste.com.au/recipes/lamb-tikka-curry-recipe/sxf892yk",
             ConsoleColor.Gray,
             """"
-           __  _
-       .-.'  `; `-._  __  _
-      (_,         .-:'  `; `-._
-    ,'o"(        (_,           )
-   (__,-'      ,'o"(            )>
-      (       (__,-'            )
-       `-'._.--._(             )
-          |||  |||`-'._.--._.-'
-                     |||  |||
-  """", new[]
+        __  _
+    .-.'  `; `-._  __  _
+   (_,         .-:'  `; `-._
+ ,'o"(        (_,           )
+(__,-'      ,'o"(            )>
+   (       (__,-'            )
+    `-'._.--._(             )
+       |||  |||`-'._.--._.-'
+                  |||  |||
+"""", new[]
             {
                 "1 brown onion, thinly sliced", "200g butternut pumpkin, peeled, seeded, cut into 3cm pieces",
                 "500g lamb mince", "1/4 cup (60g) tikka curry paste", "1 cup small cauliflower florets",
@@ -209,15 +199,52 @@ internal class Program
                 "Spray a large frying pan with olive oil spray. Place over medium-high heat. Add the onion and pumpkin. Cook, stirring, for 5 mins or until lightly browned. Add mince and cook, stirring with a wooden spoon to break up lumps, for 3-4 mins or until the mince changes colour.",
                 "Add curry paste to the mince mixture in the pan and cook, stirring, for 1 min or until aromatic. Add cauliflower, tomato and stock. Bring to the boil. Reduce heat to medium and partially cover. Cook for 10 mins or until the pumpkin is tender and sauce thickens slightly.",
                 "Stir spinach into the curry. Cook for 1 min or until spinach wilts. Remove from heat. Stir in yoghurt. Serve with rice."
+            }),
+        new(
+            "Caramilk buttercrust slice",
+            "https://www.taste.com.au/recipes/caramilk-buttercrust-slice-recipe/1c5f5c1e-8c1c-4b8d-8c1c-4b8d8c1c4b8d",
+            ConsoleColor.DarkYellow,
+            """
+()()()()()()
+|\         |
+|.\. . . . |
+\'.\       |
+ \.:\ . . .|
+  \'o\     |
+   \.'\. . |
+    \".\   |
+     \'`\ .|
+      \.'\ |
+       \__\|
+""",
+            new[]
+            {
+                "250g packet plain sweet biscuits", "125g butter, melted", "2 tsp gelatine powder",
+                "500g cream cheese, at room temperature, chopped", "395g can sweetened condensed milk",
+                "180g packet Cadbury Caramilk chocolate, melted", "39g Cadbury Twirl Caramilk bar, crumbled"
+            },
+            new[]
+            {
+                "Grease a 4cm-deep, 16 x 26cm (base size) slice pan and line with baking paper, allowing the paper to overhang the sides.",
+                "Break the biscuits into a food processor and process until coarsely crushed. Add the butter and process until combined. Transfer to the prepared pan. Use a straight-sided glass to spread and press mixture firmly over base and into sides of pan. Place in the fridge for 20 minutes or until firm.",
+                "Place 2 tbs water in a small microwave-safe bowl. Sprinkle with the gelatine and stir to combine. Microwave for 10 seconds (do not overheat). Use a fork to whisk until the gelatine dissolves. Set aside to cool slightly.",
+                "Use electric beaters to beat cream cheese in a bowl until smooth. Add the condensed milk and melted chocolate. Beat until combined. Add the gelatine mixture and beat until well combined. Pour over the biscuit mixture and smooth the surface. Place in the fridge for 4 hours or until set.",
+                "Transfer the slice to a serving board. Sprinkle with crumbled chocolate. Serve."
             })
     };
 
     private static async Task Main()
     {
         var index = 0;
-        // Expand console to largest size, except with some smaller edges
-        Console.SetWindowPosition(0, 0);
-        Console.SetWindowSize(Console.LargestWindowWidth - 2, Console.LargestWindowHeight);
+        // check if windows
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            // make the console go to the top left
+            Console.SetWindowPosition(0, 0);
+            // Expand console to largest size, except with some smaller edges
+            Console.SetWindowSize(Console.LargestWindowWidth - 2, Console.LargestWindowHeight);
+        }
+
         // instructions which users can select, last one disappears when screen too small
         var instructions = new[]
         {
@@ -264,7 +291,7 @@ internal class Program
 
 
             // Write menu title
-            Util.WriteTitle(new string("RECIPE SELECTOR".SelectMany(a => a + " ").ToArray()).TrimEnd(),
+            await Util.WriteTitle(new string("RECIPE SELECTOR".SelectMany(a => a + " ").ToArray()).TrimEnd(),
                 ConsoleColor.DarkCyan,
                 ConsoleColor.Black);
 
@@ -294,7 +321,11 @@ internal class Program
             // cancellation token to stop resize task still running when reading recipe
             var recipeSource = new CancellationTokenSource();
 
+            // throws warning, so pragma ignores it
+#pragma warning disable CS4014
+            // task to run in background for updating size
             Task.Run(async () =>
+#pragma warning restore CS4014
             {
                 var token = recipeSource.Token;
                 // Recipe print loop
@@ -320,7 +351,9 @@ internal class Program
     }
 
 
-    // enum in order track the state of screen resizing and reload button
+    /// <summary>
+    /// Tracks the state of screen resizing and reloading
+    /// </summary>
     private enum LoopState
     {
         Reset,

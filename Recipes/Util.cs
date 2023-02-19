@@ -2,7 +2,10 @@
 
 internal class Util
 {
-    // Returns when size changes
+    /// <summary>
+    /// Returns when size changes
+    /// </summary>
+    /// <param name="token">Token to allow early cancellation</param>
     internal static async Task WaitSize(CancellationToken token)
     {
         // original window dimensions
@@ -30,30 +33,35 @@ internal class Util
         }
     }
 
-    // returns an offset from the last one, ignoring the first index where it starts at zero
-    internal static void PrintDividedArea(string[] words, int totalWidth)
+    /// <summary>
+    /// Writes to screen all the <see cref="parts"/> centred on equal intervals where the first is pinned to the left hand side and the last is pinned to the right hand side.
+    /// if parts cannot fit on screen, the last is deleted
+    /// </summary>
+    /// <param name="parts">Parts to shown on screen</param>
+    /// <param name="totalWidth">length the area in which to place the parts</param>
+    internal static void PrintDividedArea(string[] parts, int totalWidth)
     {
-        // maxLength to index from words
-        var maxLength = words.Length;
+        // maxLength to index from parts
+        var maxLength = parts.Length;
         while (
             // as long as maxLength doesn't go negative
             maxLength > 1 && (
                 // make sure first two can fit
-                totalWidth / (maxLength - 1) - words[0].Length - words[1].Length / 2 < 0 ||
+                totalWidth / (maxLength - 1) - parts[0].Length - parts[1].Length / 2 < 0 ||
                 // and last one
-                (totalWidth / (maxLength - 1)) - words[maxLength - 1].Length - (words[maxLength - 2].Length / 2) < 0 ||
+                (totalWidth / (maxLength - 1)) - parts[maxLength - 1].Length - (parts[maxLength - 2].Length / 2) < 0 ||
                 // make sure that they don't overlap by zipping previous one with next one and checking if the length is less than 0
-                words[1..maxLength]
-                    .Zip(words[2..maxLength],
+                parts[1..maxLength]
+                    .Zip(parts[2..maxLength],
                         (a, b) => totalWidth / (maxLength - 1) - a.Length / 2 - b.Length / 2)
                     .Any(a => a < 0) ||
                 // make sure there is enough space in general
-                words.Take(maxLength).Sum(value => value.Length) + maxLength * 2 > totalWidth))
+                parts.Take(maxLength).Sum(value => value.Length) + maxLength * 2 > totalWidth))
             maxLength--;
 
         if (maxLength <= 1)
         {
-            Console.WriteLine(words[0]);
+            Console.WriteLine(parts[0]);
             return;
         }
 
@@ -69,32 +77,52 @@ internal class Util
                 0 => 0,
                 // if its the end, take away start and end
                 1 => maxLength == 2
-                    ? eachSpacing - words[i].Length - words[i - 1].Length
-                    : eachSpacing - words[i].Length / 2 - words[i - 1].Length,
+                    // if there is only two, take away the start and the end to get the spacing
+                    ? eachSpacing - parts[i].Length - parts[i - 1].Length
+                    // otherwise take away the start and the middle of the current one
+                    : eachSpacing - parts[i].Length / 2 - parts[i - 1].Length,
                 _ => i < maxLength - 1
-                    ? eachSpacing - words[i].Length / 2 - words[i - 1].Length / 2
-                    : eachSpacing - words[i].Length - words[i - 1].Length / 2 - words[i].Length % 2
+                    // if its not the end, take away the middle of the current one and the middle of the previous one
+                    ? eachSpacing - parts[i].Length / 2 - parts[i - 1].Length / 2
+                    // in case last one, take away the middle of the second last one and the entire end length
+                    : eachSpacing - parts[i].Length - parts[i - 1].Length / 2 - parts[i].Length % 2
             };
 
-            Console.Write(new string(' ', spacing) + words[i]);
+            Console.Write(new string(' ', spacing) + parts[i]);
         }
 
         Console.WriteLine();
     }
 
-    // Centre `space` into the area `middle` where the two return values are how many units to place before the `middle` and how many units to place after the `middle`
+    /// <summary>
+    /// Centre <see cref="space"/> into the area <see cref="middleWidth"/> where the two return values are how many units to place before the <see cref="middleWidth"/> and how many units to place after
+    /// </summary>
+    /// <param name="middleWidth">Width of middle area</param>
+    /// <param name="space">Total width available</param>
+    /// <returns></returns>
     internal static (int, int) CentreArea(int middleWidth, int space)
     {
         var spaceStartLength = space / 2 - middleWidth / 2 + 1;
         return (spaceStartLength, space - (spaceStartLength + middleWidth));
     }
 
+    /// <summary>
+    /// Wrap <see cref="text"/> with <see cref="wrap"/>
+    /// </summary>
+    /// <param name="wrap">Text to place at start and end</param>
+    /// <param name="text"></param>
+    /// <returns></returns>
     internal static string Wrap(string wrap, string text)
     {
         return wrap + text + wrap;
     }
 
-    // Read and intercept a key asynchronously
+    /// <summary>
+    /// Read a key asynchronously
+    /// </summary>
+    /// <param name="intercept">Print readkey to screen or not</param>
+    /// <param name="token">Token to allow for early exit</param>
+    /// <returns></returns>
     internal static async Task<ConsoleKeyInfo> ReadKeyAsync(bool intercept, CancellationToken token)
     {
         while (true)
@@ -110,8 +138,14 @@ internal class Util
         }
     }
 
-    // Write a title with `O` corners and line edges and text centred in the middle
-    internal static void WriteTitle(string name, ConsoleColor foregroundColor, ConsoleColor backgroundColor)
+    /// <summary>
+    /// Write a title with "O" corners and line edges and <see cref="name"/> centred in the middle. Async to allow <see cref="WaitSize"/>
+    /// </summary>
+    /// <param name="name">Text to centre</param>
+    /// <param name="foregroundColor">Foreground color of text</param>
+    /// <param name="backgroundColor">Background color of the text</param>
+    /// <returns></returns>
+    internal static async Task WriteTitle(string name, ConsoleColor foregroundColor, ConsoleColor backgroundColor)
     {
         // TotalPadding on each edges
         var sidePaddingLength = 8;
@@ -121,6 +155,21 @@ internal class Util
         // total length of corners at top and bottom edges
         var cornerLength = 2;
         var internalPaddingLength = realScreenWidth - cornerLength - sidePaddingLength;
+
+
+        // Calculate space before title
+        var (spaceStartLength, spaceEndLength) = CentreArea(name.Length,
+            internalPaddingLength);
+
+        // If screen is too small, yield back using await size
+        while (spaceStartLength < 0 || spaceEndLength < 0)
+        {
+            await WaitSize(CancellationToken.None);
+            (spaceStartLength, spaceEndLength) = CentreArea(name.Length,
+                internalPaddingLength);
+            realScreenWidth = Console.WindowWidth - 1;
+            internalPaddingLength = realScreenWidth - cornerLength - sidePaddingLength;
+        }
 
         // Whitespace at edges of box is only counted on one side
         var sidePadding = new string(' ', sidePaddingLength / 2);
@@ -134,13 +183,11 @@ internal class Util
         Console.WriteLine(Wrap(sidePadding, Wrap("|", new string(' ', internalPaddingLength)))
         );
 
-        // Calculate space before title
-        var (spaceStartLength, spaceEndLength) = CentreArea(name.Length,
-            internalPaddingLength);
 
         // Write title itself
         Console.Write(sidePadding + "|" + new string(' ', spaceStartLength));
 
+        // change colours to passeed in colours
         Console.ForegroundColor = foregroundColor;
         Console.BackgroundColor = backgroundColor;
         Console.Write(name);
@@ -157,8 +204,45 @@ internal class Util
     }
 
 
-    // Create an asynchronous menu in order to enable yielding back to
-    internal static async Task<int?> CreateMenu(string[] choices, int index, CancellationToken token
+    /// <summary>
+    /// Create an asynchronous menu with controls
+    /// <list type="table">
+    ///     <item>
+    ///         <term>J/Down Arrow</term>
+    ///         <description>Down</description>
+    ///     </item>
+    ///     <item>
+    ///         <term>K/Up Arrow</term>
+    ///         <description>Up</description>
+    ///     </item>
+    ///     <item>
+    ///          <term>R</term>
+    ///          <description>Reload screen</description>
+    ///     </item>
+    ///     <item>
+    ///         <term>ESC</term>
+    ///         <description>Prompt to close program</description>
+    ///     </item>
+    ///     <item>
+    ///         <term>Enter</term>
+    ///         <description>Select</description>
+    ///     </item>
+    ///     <item>
+    ///         <term>Numbers</term>
+    ///         <description>Jump to number</description>
+    ///     </item>
+    ///     <item>
+    ///         <term>Other letters</term>
+    ///         <description>Jump to letter surrounded with pipes</description>
+    ///     </item>
+    /// </list>
+    /// Function is async in order to enable yielding back to executor
+    /// </summary>
+    /// <param name="choices">List of possible choices</param>
+    /// <param name="startIndex">Index to start choices at</param>
+    /// <param name="token">Token to allow early exit</param>
+    /// <returns></returns>
+    internal static async Task<int?> CreateMenu(string[] choices, int startIndex, CancellationToken token
     )
     {
         var middleSize = 0;
@@ -173,8 +257,8 @@ internal class Util
             // leter index of choice
             var indexInChoice = 0;
             // while the current letter is already in the choiceLetter dict continue, or if the letter is invalid (j, k, r)
-            while (!invalidLetters.Contains(char.ToLower(choice[indexInChoice])) &&
-                   choiceLetterDict.ContainsKey(char.ToLower(choice[indexInChoice])) && indexInChoice < choice.Length)
+            while ((invalidLetters.Contains(char.ToLower(choice[indexInChoice])) ||
+                    choiceLetterDict.ContainsKey(char.ToLower(choice[indexInChoice]))) && indexInChoice < choice.Length)
                 indexInChoice++;
 
             // set the letter to the choice index
@@ -201,13 +285,14 @@ internal class Util
             Console.WriteLine(new string(' ', leftOffset) + choice);
         }
 
-        Console.CursorTop -= choices.Length - index;
+        // Reset cursor to current index
+        Console.CursorTop -= choices.Length - startIndex;
 
 
         // print a notification to the screen
         void PrintNotifcation(string content)
         {
-            Console.CursorTop += choices.Length - index + 3;
+            Console.CursorTop += choices.Length - startIndex + 3;
             var (startOffset, _) = CentreArea(content.Length, Console.WindowWidth);
             Console.ForegroundColor = ConsoleColor.DarkRed;
             Console.Write(new string(' ', startOffset) + content);
@@ -219,20 +304,23 @@ internal class Util
         {
             ResetLine();
             // write unselected
-            Console.Write(new string(' ', leftOffset) + choices[index]);
+            Console.Write(new string(' ', leftOffset) + choices[startIndex]);
         }
 
         while (true)
         {
-            Console.CursorTop = topOffset + index;
+            Console.CursorTop = topOffset + startIndex;
 
             ResetLine();
 
             // Write the currently selected choice
+
+
             Console.CursorLeft = leftOffset;
+
             Console.BackgroundColor = ConsoleColor.DarkGray;
             Console.ForegroundColor = ConsoleColor.Black;
-            Console.Write(Wrap(" ", "> " + choices[index].PadRight(middleSize)));
+            Console.Write(Wrap(" ", "> " + choices[startIndex].PadRight(middleSize)));
             Console.CursorLeft = leftOffset;
 
             // Wait for key press and assign to variable `key`
@@ -250,21 +338,21 @@ internal class Util
                 case ConsoleKey.UpArrow:
                     ResetLineToUnselected();
                     //  take 1 off index and avoid negative modulo
-                    index = (index - 1 + choices.Length) % choices.Length;
+                    startIndex = (startIndex - 1 + choices.Length) % choices.Length;
 
                     break;
                 // actions for Down arrow and j (vim)
                 case ConsoleKey.J:
                 case ConsoleKey.DownArrow:
                     ResetLineToUnselected();
-                    index = (index + 1) % choices.Length;
+                    startIndex = (startIndex + 1) % choices.Length;
                     break;
 
                 // select the current choice
                 case ConsoleKey.Enter:
-                    Console.CursorTop += choices.Length - index;
+                    Console.CursorTop += choices.Length - startIndex;
                     ResetLine();
-                    return index;
+                    return startIndex;
                 // reload the current menu (typically for when the screen is resized)
                 case ConsoleKey.R:
                     return null;
@@ -295,7 +383,7 @@ internal class Util
                         if (number < choices.Length)
                         {
                             ResetLineToUnselected();
-                            index = number;
+                            startIndex = number;
                         }
 
                         break;
@@ -306,7 +394,7 @@ internal class Util
                     if (choiceLetterDict.ContainsKey(lower))
                     {
                         ResetLineToUnselected();
-                        index = choiceLetterDict[lower];
+                        startIndex = choiceLetterDict[lower];
                     }
 
                     break;
@@ -314,7 +402,9 @@ internal class Util
         }
     }
 
-    // Reset the current line to be blank
+    /// <summary>
+    /// Reset the current line to be blank
+    /// </summary>
     private static void ResetLine()
     {
         var currentLineCursor = Console.CursorTop;
