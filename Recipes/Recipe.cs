@@ -24,6 +24,7 @@ internal class Recipe
     private string fixImage(string image)
     {
         var lines = image.Split("\n");
+        // max width of image
         var maxWidth = lines.Max(line => line.Length);
         var fixedImage = "";
         // maintain shape of image by adding spaces to the end of each line
@@ -129,6 +130,7 @@ internal class Recipe
     {
         // Width of entire screen minus 2 for padding
         var width = Console.WindowWidth - 2;
+        // write each line centred
         foreach (var line in Image.Split("\n"))
         {
             var (start, end) = Util.CentreArea(line.Length, width);
