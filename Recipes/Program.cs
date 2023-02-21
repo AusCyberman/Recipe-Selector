@@ -324,7 +324,7 @@ SOMEBODY TOUCHA MY SPAGHET, WHERE'D IT GO!
             // throws warning, so pragma ignores it
 #pragma warning disable CS4014
             // task to run in background for updating size
-            Task.Run(async () =>
+            var task = Task.Run(async () =>
 #pragma warning restore CS4014
             {
                 var token = recipeSource.Token;
@@ -341,12 +341,14 @@ SOMEBODY TOUCHA MY SPAGHET, WHERE'D IT GO!
                     // Wait for size change
                     await Util.WaitSize(token);
                 }
+                // termianted
             });
             // Reset colour to default color
 
             // Prompt for 'y' or 'yes' to end program, or continue on all other prompts
             await Util.ReadKeyAsync(false, recipeSource.Token);
             recipeSource.Cancel();
+            Console.WriteLine(task.Exception);
         }
     }
 

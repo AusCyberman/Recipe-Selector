@@ -34,6 +34,63 @@ internal class Util
     }
 
     /// <summary>
+    /// Write elements of <see cref="lines"/> where no line can overflow
+    /// </summary>
+    /// <param name="startFunction">Function to generate start of line</param>
+    /// <param name="lines">List of all line parts</param>
+    /// <param name="lineLength">Total length of line to fill up</param>
+    /// <param name="endWithExtraNewLine">If the line is finished with an extra new line</param>
+    internal static void WriteTrailingLines(Func<int, string> startFunction, string[] lines, int lineLength,
+        bool endWithExtraNewLine)
+    {
+        for (var i = 0; i < lines.Length; ++i)
+        {
+            var startPart = startFunction(i);
+            // the length of the line minus 1, for padding sake
+            // in case of line being longer than lineLength, split it into multiple lines
+            if (lines[i].Length + startPart.Length > lineLength)
+            {
+                // split line into words
+                var parts = lines[i].Split(' ');
+
+                // sequentially write words to console, starting a new line if the current line is full
+                Console.Write(startPart + new string(parts[0]));
+                foreach (var part in parts[1..])
+                {
+                    // if adding the next word to the current line would exceed the line length, start a new line
+                    if (startPart.Length >= Console.CursorLeft)
+                    {
+                        Console.WriteLine(part);
+                        continue;
+                    }
+
+                    if (Console.CursorLeft + part.Length >= lineLength && Console.CursorLeft > startPart.Length - 1)
+                    {
+                        Console.WriteLine();
+                        // Write line padding to length of start length
+                        Console.Write(new string(' ', startPart.Length - 1));
+                    }
+
+                    Console.Write(" " + part);
+                }
+
+                Console.WriteLine();
+            }
+            // otherwise just write the line to the console
+            else
+            {
+                Console.WriteLine(startPart + lines[i]);
+            }
+
+            // end With line
+            if (endWithExtraNewLine)
+            {
+                Console.WriteLine();
+            }
+        }
+    }
+
+    /// <summary>
     /// Writes to screen all the <see cref="parts"/> centred on equal intervals where the first is pinned to the left hand side and the last is pinned to the right hand side.
     /// if parts cannot fit on screen, the last is deleted
     /// </summary>
@@ -102,7 +159,11 @@ internal class Util
     /// <returns></returns>
     internal static (int, int) CentreArea(int middleWidth, int space)
     {
-        var spaceStartLength = space / 2 - middleWidth / 2 + 1;
+        // take all space, divide it by tw oand take off the middleWidth / 2
+        var spaceStartLength = space / 2 - middleWidth / 2;
+        // if the starting spaces negative, make the space zero
+        if (spaceStartLength <= 0)
+            return (0, 0);
         return (spaceStartLength, space - (spaceStartLength + middleWidth));
     }
 
@@ -162,7 +223,7 @@ internal class Util
             internalPaddingLength);
 
         // If screen is too small, yield back using await size
-        while (spaceStartLength < 0 || spaceEndLength < 0)
+        while (cornerLength + sidePaddingLength + name.Length > realScreenWidth)
         {
             await WaitSize(CancellationToken.None);
             (spaceStartLength, spaceEndLength) = CentreArea(name.Length,

@@ -73,8 +73,9 @@ internal class Recipe
     {
         Console.WriteLine("   Ingredients");
         Console.WriteLine();
-        for (var i = 0; i < Ingredients.Length; ++i) Console.WriteLine(" * " + Ingredients[i]);
-
+        // write lines with no extra new line
+        Util.WriteTrailingLines((i) => " * ", Ingredients,
+            Console.WindowWidth - 1, false);
         Console.WriteLine();
     }
 
@@ -85,42 +86,10 @@ internal class Recipe
     {
         Console.WriteLine("    Instructions ");
         Console.WriteLine();
-        for (var i = 0; i < Instructions.Length; ++i)
-        {
-            var startPart = " " + (i + 1) + ": ";
-            // the length of the line minus 1, for padding sake
-            var lineLength = Console.WindowWidth - 1;
-            // in case of instruction being longer than console width, split it into multiple lines
-            if (Instructions[i].Length + startPart.Length > Console.WindowWidth)
-            {
-                // split instruction into words
-                var parts = Instructions[i].Split(' ');
 
-                // sequentially write words to console, starting a new line if the current line is full
-                Console.Write(startPart + new string(parts[0]));
-                foreach (var part in parts[1..])
-                {
-                    // if adding the next word to the current line would exceed the line length, start a new line
-                    if (Console.CursorLeft + part.Length >= lineLength)
-                    {
-                        Console.WriteLine();
-                        // Pad line with length of length of instruction indicator ,`startPart`, to keep alignment minus the following space to simplify following code
-                        Console.Write(new string(' ', startPart.Length - 1));
-                    }
-
-                    Console.Write(" " + part);
-                }
-
-                Console.WriteLine();
-            }
-            // otherwise just write the instruction to the console
-            else
-            {
-                Console.WriteLine(startPart + Instructions[i]);
-            }
-
-            Console.WriteLine();
-        }
+        // function to write lines with trailing line
+        Util.WriteTrailingLines(i => " " + (i + 1) + ": "
+            , Instructions, Console.WindowWidth - 1, true);
     }
 
     /// <summary>
@@ -144,10 +113,21 @@ internal class Recipe
     public void Print()
     {
         // Write title
-        Util.WriteTitle(Name.ToUpper(), ForegroundColor, ConsoleColor.Black).Wait();
+        // if false print basic title
+        if (!Util.WriteTitle(Name.ToUpper(), ForegroundColor, ConsoleColor.Black).Wait(700))
+        {
+            // simple reimplementation of it on single line
+            Console.ForegroundColor = ForegroundColor;
+            Console.WriteLine(" " + Name);
+            Console.ResetColor();
+        }
+        // only write image if space for big title
+        else
+        {
+            WriteImage();
+        }
 
         // Write Image
-        WriteImage();
 
         Console.WriteLine();
 
